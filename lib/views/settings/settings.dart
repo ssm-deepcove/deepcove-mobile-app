@@ -43,6 +43,11 @@ class _SettingsState extends State<Settings> {
               ),
               Divider(color: HexColor("FF777777"), height: 1),
               SettingsButton(
+                  iconData: FontAwesomeIcons.newspaper,
+                  text: "View Notices",
+                  onTap: () {}),
+              Divider(color: HexColor("FF777777"), height: 1),
+              SettingsButton(
                 iconData: FontAwesomeIcons.infoCircle,
                 text: "About this app",
                 onTap: () {
@@ -137,7 +142,6 @@ class _SettingsState extends State<Settings> {
   }
 
   _resetProgress() async {
-
     ActivityBean activityBean = ActivityBean.of(context);
     List<Activity> activities = await activityBean.getAll();
     activities.forEach((a) {
