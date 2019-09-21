@@ -9,8 +9,14 @@ class Notice {
   Notice();
 
   Notice.make({
-    @required this.id
-});
+    @required this.id,
+    @required this.urgent,
+    @required this.imageId,
+    @required this.activatedAt,
+    @required this.title,
+    @required this.shortDesc,
+    @required this.longDesc,
+}) : dismissed = false;
 
   @PrimaryKey()
   int id;
