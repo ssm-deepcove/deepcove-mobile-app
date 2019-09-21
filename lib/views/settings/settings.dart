@@ -51,9 +51,7 @@ class _SettingsState extends State<Settings> {
               SettingsButton(
                 iconData: FontAwesomeIcons.infoCircle,
                 text: "About this app",
-                onTap: () {
-                  Navigator.of(context).pushNamed('/about');
-                },
+                onTap: () => Navigator.of(context).pushNamed('/about'),
               ),
               Divider(color: HexColor("FF777777"), height: 1),
               SettingsButton(
