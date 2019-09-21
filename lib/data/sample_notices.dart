@@ -1,6 +1,6 @@
 import 'models/notice.dart';
 
-List<Notice> notices = [
+List<Notice> urgentNotices = [
   Notice.make(
     id: 1,
     urgent: true,
@@ -27,6 +27,9 @@ List<Notice> notices = [
         " and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic"
         "typesetting, remaining essentially unchanged.",
   ),
+];
+
+List<Notice> standardNotices = [
   Notice.make(
     id: 3,
     urgent: false,
