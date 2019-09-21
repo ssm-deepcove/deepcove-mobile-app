@@ -13,6 +13,8 @@ import 'package:discover_deep_cove/views/home.dart';
 import 'package:discover_deep_cove/views/quiz/quiz_unlock.dart';
 import 'package:discover_deep_cove/views/quiz/quiz_view.dart';
 import 'package:discover_deep_cove/views/settings/about.dart';
+import 'package:discover_deep_cove/views/settings/noticeboard/notice_view.dart';
+import 'package:discover_deep_cove/views/settings/noticeboard/noticeboard.dart';
 import 'package:discover_deep_cove/views/splash.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +31,22 @@ class RouteGenerator {
 
       case '/about':
         return MaterialPageRoute(builder: (_) => About());
+
+      //Noticeboard routes
+      case '/noticeboard':
+        return MaterialPageRoute(builder: (_) => Noticeboard());
+
+      case '/noticeView':
+        if (args is int) {
+          final int args = settings.arguments;
+          return MaterialPageRoute(
+            builder: (_) => NoticeView(
+              noticeId: args,
+            ),
+          );
+        }
+
+        return _errorRoute();
 
       //Fact file routes
       case '/factFileDetails':
@@ -110,10 +128,9 @@ class RouteGenerator {
           }
           if (aArgs.activity.activityType == ActivityType.informational) {
             return MaterialPageRoute(
-            builder: (_) => FactFileDetails(
-              entryId: aArgs.activity.factFileId
-            ),
-          );
+              builder: (_) =>
+                  FactFileDetails(entryId: aArgs.activity.factFileId),
+            );
           }
         }
         return _errorRoute();
