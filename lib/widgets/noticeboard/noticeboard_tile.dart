@@ -11,72 +11,82 @@ class NoticeTile extends StatelessWidget {
   final String desc;
   final bool isUrgent;
   final bool hasMore;
+  final VoidCallback onTap;
 
   static const String TH = "\u1d57\u02b0";
   static const String ND = "\u207f\u1d48";
   static const String RD = "\u02b3\u1d48";
   static const String ST = "\u02e2\u1d57";
 
-  NoticeTile({this.title, this.date, this.desc, this.isUrgent, this.hasMore});
+  NoticeTile(
+      {this.title,
+      this.date,
+      this.desc,
+      this.isUrgent,
+      this.hasMore,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SubHeading(
-                          title,
-                        ),
-                        Text(
-                          '${date.day}$getOrdinalIndicator ${date.month} ${date.year}',
-                          style: TextStyle(
-                            color: HexColor("FF777777"),
-                            fontSize: Screen.isTablet(context)
-                                ? 30
-                                : Screen.isSmall(context) ? 12 : 14,
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SubHeading(
+                            title,
                           ),
-                        ),
-                      ],
-                    ),
-                    isUrgent
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              FontAwesomeIcons.exclamationTriangle,
-                              color: Colors.red,
+                          Text(
+                            '${date.day}$getOrdinalIndicator ${date.month} ${date.year}',
+                            style: TextStyle(
+                              color: HexColor("FF777777"),
+                              fontSize: Screen.isTablet(context)
+                                  ? 30
+                                  : Screen.isSmall(context) ? 12 : 14,
                             ),
-                          )
-                        : Container(),
-                  ],
-                )
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            BodyText(
-              desc,
-              align: TextAlign.left,
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            hasMore
-                ? BodyText(
-                    'Tap for more info',
+                          ),
+                        ],
+                      ),
+                      isUrgent
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                FontAwesomeIcons.exclamationTriangle,
+                                color: Colors.red,
+                              ),
+                            )
+                          : Container(),
+                    ],
                   )
-                : Container(),
-          ],
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              BodyText(
+                desc,
+                align: TextAlign.left,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              hasMore
+                  ? BodyText(
+                      'Tap for more info',
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );
