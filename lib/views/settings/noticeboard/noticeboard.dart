@@ -1,4 +1,5 @@
 import 'package:discover_deep_cove/util/screen.dart';
+import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
 import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -37,6 +38,8 @@ class _NoticeboardState extends State<Noticeboard> {
         backgroundColor: Theme.of(context).backgroundColor,
         brightness: Brightness.dark,
       ),
+      backgroundColor: Theme.of(context).backgroundColor,
+      bottomNavigationBar: BottomBackButton(),
     );
   }
 }
