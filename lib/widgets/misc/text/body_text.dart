@@ -6,7 +6,7 @@ class BodyText extends StatelessWidget {
   final TextAlign align;
   final double size;
 
-  ///Returns a custom [Text] widget for accessing body1 theme
+  ///Returns a custom [Text] widget
   ///and has an optional alignment property.
   BodyText(this.text, {this.align = TextAlign.center, this.size});
 
