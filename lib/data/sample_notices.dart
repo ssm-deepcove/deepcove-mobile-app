@@ -29,7 +29,7 @@ List<Notice> urgentNotices = [
   ),
 ];
 
-List<Notice> standardNotices = [
+List<Notice> otherNotices = [
   Notice.make(
     id: 3,
     urgent: false,
