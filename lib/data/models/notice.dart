@@ -1,3 +1,5 @@
+import 'package:discover_deep_cove/data/database_adapter.dart';
+import 'package:flutter/material.dart' show BuildContext;
 import 'package:meta/meta.dart';
 
 import 'package:discover_deep_cove/data/models/media_file.dart';
@@ -49,6 +51,9 @@ class Notice {
 @GenBean()
 class NoticeBean extends Bean<Notice> with _NoticeBean {
   NoticeBean(Adapter adapter) : super(adapter);
+
+  NoticeBean.of(BuildContext context)
+      : super(DatabaseAdapter.of(context));
 
   MediaFileBean _mediaFileBean;
 
