@@ -14,49 +14,67 @@ class Noticeboard extends StatefulWidget {
 }
 
 class _NoticeboardState extends State<Noticeboard> {
+  List<Notice> uNotices;
+  List<Notice> oNotices;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Container(),
-        title: SubHeading(
-          'Deep Cove Noticeboard',
-          size:
-              Screen.isTablet(context) ? 30 : Screen.isSmall(context) ? 16 : 23,
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(
-              right: Screen.width(context, percentage: 1.25),
-            ),
-      child: IconButton(
-        icon: Icon(
-          FontAwesomeIcons.sync,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          //TODO: refresh the list of notices send to refesh indicator method?
-        },
-      ),
-          ),
+    return FutureBuilder(
+        future: loadNotices(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              appBar: AppBar(
+                leading: Container(),
+                title: SubHeading(
+                  'Deep Cove Noticeboard',
+                  size: Screen.isTablet(context)
+                      ? 30
+                      : Screen.isSmall(context) ? 16 : 23,
+                ),
+                centerTitle: true,
+                actions: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: Screen.width(context, percentage: 1.25),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        FontAwesomeIcons.sync,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        //TODO: refresh the list of notices send to refesh indicator method?
+                      },
+                    ),
+                  ),
+                ],
+                backgroundColor: Theme.of(context).backgroundColor,
+                brightness: Brightness.dark,
+              ),
+              body: buildContent(),
+              backgroundColor: Theme.of(context).backgroundColor,
+              bottomNavigationBar: BottomBackButton(),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          // child:
+        });
+  }
+
+  buildContent() {
+    return RefreshIndicator(
+      onRefresh: refreshNotices,
+      child: ListView(
+        children: <Widget>[
+          Seperator("Important Notices"),
+          ...getUrgent(),
+          Seperator("Other Notices"),
+          ...getOther(),
         ],
-        backgroundColor: Theme.of(context).backgroundColor,
-        brightness: Brightness.dark,
       ),
-      body: RefreshIndicator(
-        onRefresh: refreshNotices,
-        child: ListView(
-          children: <Widget>[
-            Seperator("Important Notices"),
-            ...getUrgent(),
-            Seperator("Other Notices"),
-            ...getOther(),
-          ],
-        ),
-      ),
-      backgroundColor: Theme.of(context).backgroundColor,
-      bottomNavigationBar: BottomBackButton(),
     );
   }
 
@@ -65,7 +83,7 @@ class _NoticeboardState extends State<Noticeboard> {
   }
 
   List<Widget> getUrgent() {
-    List<Widget> urgent = urgentNotices
+    List<Widget> urgent = uNotices
         .map(
           (data) => NoticeTile(
             title: data.title,
@@ -78,7 +96,7 @@ class _NoticeboardState extends State<Noticeboard> {
                 ? () => Navigator.pushNamed(
                       context,
                       '/noticeView',
-                      arguments: data.id,
+                      arguments: data,
                     )
                 : null,
           ),
@@ -93,7 +111,7 @@ class _NoticeboardState extends State<Noticeboard> {
   }
 
   List<Widget> getOther() {
-    List<Widget> other = otherNotices
+    List<Widget> other = oNotices
         .map(
           (data) => NoticeTile(
             title: data.title,
@@ -106,7 +124,7 @@ class _NoticeboardState extends State<Noticeboard> {
                 ? () => Navigator.pushNamed(
                       context,
                       '/noticeView',
-                      arguments: data.id,
+                      arguments: data,
                     )
                 : null,
           ),
@@ -114,5 +132,11 @@ class _NoticeboardState extends State<Noticeboard> {
         .toList();
 
     return other;
+  }
+
+  Future<void> loadNotices() async {
+    uNotices =
+        await NoticeBean.of(context).preloadExtrasForRange(urgentNotices);
+    oNotices = await NoticeBean.of(context).preloadExtrasForRange(otherNotices);
   }
 }
