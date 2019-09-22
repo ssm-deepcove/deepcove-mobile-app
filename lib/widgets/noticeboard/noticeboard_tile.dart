@@ -1,5 +1,6 @@
 import 'package:discover_deep_cove/util/hex_color.dart';
 import 'package:discover_deep_cove/util/screen.dart';
+import 'package:discover_deep_cove/util/date_util.dart';
 import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
 import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class NoticeTile extends StatelessWidget {
                             title,
                           ),
                           Text(
-                            '${date.day}$getOrdinalIndicator ${date.month} ${date.year}',
+                            DateUtil.formatDate(date),
                             style: TextStyle(
                               color: HexColor("FF777777"),
                               fontSize: Screen.isTablet(context)
@@ -90,21 +91,5 @@ class NoticeTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String getOrdinalIndicator() {
-    if (date.day >= 11 && date.day <= 13) {
-      return TH;
-    }
-    switch (date.day % 10) {
-      case 1:
-        return ST;
-      case 2:
-        return ND;
-      case 3:
-        return RD;
-      default:
-        return TH;
-    }
   }
 }
