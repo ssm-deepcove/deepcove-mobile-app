@@ -6,7 +6,7 @@ List<Notice> urgentNotices = [
     urgent: true,
     imageId: 1,
     activatedAt: DateTime(2019, 12, 09),
-    title: "This is an urgent test notice",
+    title: "This is an urgent test notice!",
     shortDesc:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
     longDesc:
@@ -19,7 +19,7 @@ List<Notice> urgentNotices = [
     urgent: true,
     imageId: null,
     activatedAt: DateTime(2019, 07, 26),
-    title: "This is an duplicate urgent test notice",
+    title: "This is an duplicate urgent test notice that needs to be really long",
     shortDesc:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
     longDesc:
@@ -31,7 +31,7 @@ List<Notice> urgentNotices = [
 
 List<Notice> otherNotices = [
   Notice.make(
-    id: 3,
+    id: 1,
     urgent: false,
     imageId: 2,
     activatedAt: DateTime(2020, 02, 29),
