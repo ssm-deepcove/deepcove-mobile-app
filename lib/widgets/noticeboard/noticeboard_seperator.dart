@@ -11,7 +11,7 @@ class Seperator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).primaryColorDark,
-      height: Screen.height(context, percentage: 10),
+      height: Screen.height(context, percentage: 8),
       child: Center(
         child: SubHeading(
           title,
