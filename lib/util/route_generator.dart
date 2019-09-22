@@ -1,5 +1,6 @@
 import 'package:discover_deep_cove/data/models/activity/activity.dart';
 import 'package:discover_deep_cove/data/models/factfile/fact_file_entry.dart';
+import 'package:discover_deep_cove/data/models/notice.dart';
 import 'package:discover_deep_cove/data/models/quiz/quiz.dart';
 import 'package:discover_deep_cove/views/activites/activity_screen_args.dart';
 import 'package:discover_deep_cove/views/activites/activity_unlock.dart';
@@ -37,11 +38,11 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => Noticeboard());
 
       case '/noticeView':
-        if (args is int) {
-          final int args = settings.arguments;
+        if (args is Notice) {
+          final Notice args = settings.arguments;
           return MaterialPageRoute(
             builder: (_) => NoticeView(
-              noticeId: args,
+              notice: args,
             ),
           );
         }
