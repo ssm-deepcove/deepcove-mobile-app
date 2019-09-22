@@ -1,6 +1,9 @@
+import 'package:discover_deep_cove/data/sample_notices.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
 import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
+import 'package:discover_deep_cove/widgets/noticeboard/noticeboard_seperator.dart';
+import 'package:discover_deep_cove/widgets/noticeboard/noticeboard_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -31,15 +34,78 @@ class _NoticeboardState extends State<Noticeboard> {
                 FontAwesomeIcons.sync,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                //TODO: refresh the list of notices send to refesh indicator method?
+              },
             ),
           ),
         ],
         backgroundColor: Theme.of(context).backgroundColor,
         brightness: Brightness.dark,
       ),
+      body: RefreshIndicator(
+        onRefresh: refreshNotices,
+        child: ListView(
+          children: <Widget>[
+            Seperator("Important Notices"),
+            ...getUrgent(),
+            Seperator("Other Notices"),
+            ...getOther(),
+          ],
+        ),
+      ),
       backgroundColor: Theme.of(context).backgroundColor,
       bottomNavigationBar: BottomBackButton(),
     );
+  }
+
+  Future<Null> refreshNotices() async {
+    return null;
+  }
+
+  List<Widget> getUrgent() {
+    List<Widget> urgent = urgentNotices
+        .map(
+          (data) => NoticeTile(
+            title: data.title,
+            date: data.activatedAt,
+            desc: data.shortDesc,
+            isUrgent: true,
+            hasMore: data.longDesc != null ? true : false,
+            onTap: data.longDesc != null
+                ? () => Navigator.pushNamed(
+                      context,
+                      '/noticeView',
+                      arguments: data.id,
+                    )
+                : null,
+          ),
+        )
+        .toList();
+
+    return urgent;
+  }
+
+  List<Widget> getOther() {
+    List<Widget> other = otherNotices
+        .map(
+          (data) => NoticeTile(
+            title: data.title,
+            date: data.activatedAt,
+            desc: data.shortDesc,
+            isUrgent: false,
+            hasMore: data.longDesc != null ? true : false,
+            onTap: data.longDesc != null
+                ? () => Navigator.pushNamed(
+                      context,
+                      '/noticeView',
+                      arguments: data.id,
+                    )
+                : null,
+          ),
+        )
+        .toList();
+
+    return other;
   }
 }
