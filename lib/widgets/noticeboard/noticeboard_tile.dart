@@ -29,7 +29,9 @@ class NoticeTile extends StatelessWidget {
     return Container(
       decoration: isUrgent
           ? BoxDecoration(
-              border: Border(left: BorderSide(color: Colors.red, width: 5)),
+              border: Border(
+                left: BorderSide(color: Colors.red, width: 5),
+              ),
             )
           : null,
       child: GestureDetector(
@@ -49,21 +51,26 @@ class NoticeTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
-                              width: Screen.width(context, percentage: 80),
+                              width: Screen.width(context,
+                                  percentage:
+                                      Screen.isSmall(context) ? 75 : 80),
                               child: SubHeading(
                                 title,
                                 size: Screen.isTablet(context)
-                                    ? 30
+                                    ? 25
                                     : Screen.isSmall(context) ? 16 : 18,
                                 align: TextAlign.left,
                               ),
+                            ),
+                            SizedBox(
+                              height: 2,
                             ),
                             Text(
                               DateUtil.formatDate(date),
                               style: TextStyle(
                                 color: HexColor("FF999999"),
                                 fontSize: Screen.isTablet(context)
-                                    ? 30
+                                    ? 23
                                     : Screen.isSmall(context) ? 12 : 14,
                               ),
                             ),
@@ -75,7 +82,7 @@ class NoticeTile extends StatelessWidget {
                                 child: BodyText(
                                   "MORE",
                                   size: Screen.isTablet(context)
-                                      ? 30
+                                      ? 23
                                       : Screen.isSmall(context) ? 12 : 14,
                                 ),
                               )
@@ -92,7 +99,7 @@ class NoticeTile extends StatelessWidget {
                   style: TextStyle(
                     color: HexColor("FF999999"),
                     fontSize: Screen.isTablet(context)
-                        ? 30
+                        ? 20
                         : Screen.isSmall(context) ? 14 : 16,
                   ),
                   textAlign: TextAlign.left,
