@@ -1,3 +1,4 @@
+import 'package:discover_deep_cove/data/models/notice.dart';
 import 'package:discover_deep_cove/data/sample_notices.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
@@ -21,7 +22,7 @@ class _NoticeboardState extends State<Noticeboard> {
         title: SubHeading(
           'Deep Cove Noticeboard',
           size:
-              Screen.isTablet(context) ? 30 : Screen.isSmall(context) ? 16 : 20,
+              Screen.isTablet(context) ? 30 : Screen.isSmall(context) ? 16 : 23,
         ),
         centerTitle: true,
         actions: <Widget>[
@@ -29,15 +30,15 @@ class _NoticeboardState extends State<Noticeboard> {
             padding: EdgeInsets.only(
               right: Screen.width(context, percentage: 1.25),
             ),
-            child: IconButton(
-              icon: Icon(
-                FontAwesomeIcons.sync,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                //TODO: refresh the list of notices send to refesh indicator method?
-              },
-            ),
+      child: IconButton(
+        icon: Icon(
+          FontAwesomeIcons.sync,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          //TODO: refresh the list of notices send to refesh indicator method?
+        },
+      ),
           ),
         ],
         backgroundColor: Theme.of(context).backgroundColor,
@@ -72,6 +73,7 @@ class _NoticeboardState extends State<Noticeboard> {
             desc: data.shortDesc,
             isUrgent: true,
             hasMore: data.longDesc != null ? true : false,
+            hasDivider: hasDivider(data, urgentNotices),
             onTap: data.longDesc != null
                 ? () => Navigator.pushNamed(
                       context,
@@ -86,6 +88,10 @@ class _NoticeboardState extends State<Noticeboard> {
     return urgent;
   }
 
+  bool hasDivider(Notice notice, List<Notice> notices) {
+    return notice == notices.last || notices.length == 1 ? false : true;
+  }
+
   List<Widget> getOther() {
     List<Widget> other = otherNotices
         .map(
@@ -95,6 +101,7 @@ class _NoticeboardState extends State<Noticeboard> {
             desc: data.shortDesc,
             isUrgent: false,
             hasMore: data.longDesc != null ? true : false,
+            hasDivider: hasDivider(data, otherNotices),
             onTap: data.longDesc != null
                 ? () => Navigator.pushNamed(
                       context,
