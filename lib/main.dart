@@ -1,3 +1,4 @@
+import 'package:cron/cron.dart';
 import 'package:discover_deep_cove/data/database_adapter.dart';
 import 'package:discover_deep_cove/data/db.dart';
 import 'package:discover_deep_cove/env.dart';
@@ -16,6 +17,10 @@ void main() async {
 
   // Force portrait orientation
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  //Create cron which schedules checking for updates and notices
+  var cron = Cron();
+  cron.schedule(Schedule.parse('* */1 * * *'), () async {});
 
   runApp(
     DatabaseAdapter(
@@ -40,6 +45,8 @@ ThemeData appTheme() {
     accentColor: HexColor("FFFF5026"),
     //Dark Gray
     backgroundColor: HexColor("FF363636"),
+
+    //TODO: Add Colors for Grey body text and red urgent notice left idicator
 
     fontFamily: 'Roboto',
   );
