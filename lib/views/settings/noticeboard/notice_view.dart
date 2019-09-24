@@ -29,8 +29,11 @@ class NoticeView extends StatelessWidget {
         ? GridView.count(
             crossAxisCount: 2,
             children: [
+              getTop(context),
               ListView(
-                children: [],
+                children: [
+                  getBottom(context),
+                ],
               ),
             ],
           )
@@ -55,6 +58,7 @@ class NoticeView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SizedBox(
             height: 50,
@@ -77,7 +81,9 @@ class NoticeView extends StatelessWidget {
                   : Screen.isSmall(context) ? 12 : 14,
             ),
           ),
-          Divider(color: HexColor("FF777777"), height: 20),
+          Screen.isPortrait(context)
+              ? Divider(color: HexColor("FF777777"), height: 20)
+              : Container(),
         ],
       ),
     );
@@ -126,6 +132,7 @@ class NoticeView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               BodyText(
                 notice.shortDesc,
