@@ -26,16 +26,16 @@ class NoticeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: isUrgent
-          ? BoxDecoration(
-              border: Border(
-                left: BorderSide(color: Colors.red, width: 5),
-              ),
-            )
-          : null,
-      child: GestureDetector(
-        onTap: onTap,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: isUrgent
+            ? BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.red, width: 5),
+                ),
+              )
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
