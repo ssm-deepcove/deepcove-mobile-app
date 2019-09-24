@@ -74,14 +74,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       activity = await ActivityBean.of(context).preloadRelationships(activity);
       navigateToActivity(activity, true);
     } else {
-      Toast.show(
-        "Activity is locked, please scan qr-code",
-        context,
-        duration: Toast.LENGTH_SHORT,
-        gravity: Toast.BOTTOM,
-        backgroundColor: Theme.of(context).primaryColor,
-        textColor: Colors.black,
-      );
+      Util.showToast(context, "Activity is locked, please scan qr-code");
     }
   }
 
