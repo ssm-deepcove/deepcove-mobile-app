@@ -1,35 +1,35 @@
-import 'package:discover_deep_cove/views/settings/noticeboard/noticeboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'hex_color.dart';
 
 class LocalNotifications {
-  static FlutterLocalNotificationsPlugin notifications;
-  static BuildContext context;
+  static FlutterLocalNotificationsPlugin _notifications;
+  static BuildContext _context;
 
   static initlizeNotifications() {
-    notifications = FlutterLocalNotificationsPlugin();
+    _notifications = FlutterLocalNotificationsPlugin();
 
     var initializationSettingsAndroid = AndroidInitializationSettings('icon');
 
     var initializationSettings =
         InitializationSettings(initializationSettingsAndroid, null);
 
-    notifications.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
+    _notifications.initialize(initializationSettings,
+        onSelectNotification: _onSelectNotification);
   }
 
-  static Future onSelectNotification(String payload) async {  
-    switch(payload){
+  //  onPressed: () => LocalNotifications.showOngoingNotification(title: 'Test',body: "Test", cntxt: context, payload: 'Notice'),
+
+  static Future _onSelectNotification(String payload) async {
+    switch (payload) {
       case "Notice":
-          await Navigator.of(context).pushNamed('/noticeboard');
-          break;
+        await Navigator.of(_context).pushNamed('/noticeboard');
+        break;
 
       case "Content":
-        //TODO: decide which route to pass
+      //TODO: decide which route to pass
     }
-    
   }
 
   static NotificationDetails get _notice {
@@ -39,7 +39,7 @@ class LocalNotifications {
       'New notice notification',
       importance: Importance.Max,
       priority: Priority.High,
-      ongoing: true,
+      ongoing: false,
       autoCancel: true,
       color: HexColor("FF8BC34A"),
     );
@@ -54,7 +54,7 @@ class LocalNotifications {
       'New content available notification',
       importance: Importance.Max,
       priority: Priority.High,
-      ongoing: true,
+      ongoing: false,
       autoCancel: true,
       color: HexColor("FF8BC34A"),
     );
@@ -62,25 +62,29 @@ class LocalNotifications {
     return NotificationDetails(androidChannelSpecifics, null);
   }
 
-  static Future showOngoingNotification({
+  static Future showNotification({
     @required String title,
     @required String body,
     @required String payload,
     @required BuildContext cntxt,
     int id = 0,
   }) {
-    context = cntxt;
+    _context = cntxt;
 
-    return showNotification(
-        title: title, body: body, id: id, type: payload == "Notice" ? _notice : _download, payload: payload);
+    return _displayNotification(
+        title: title,
+        body: body,
+        id: id,
+        type: payload == "Notice" ? _notice : _download,
+        payload: payload);
   }
 
-  static Future showNotification({
+  static Future _displayNotification({
     @required String title,
     @required String body,
     @required NotificationDetails type,
     @required String payload,
     int id = 0,
   }) =>
-      notifications.show(id, title, body, type, payload: payload);
+      _notifications.show(id, title, body, type, payload: payload);
 }
