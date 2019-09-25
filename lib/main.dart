@@ -4,6 +4,7 @@ import 'package:discover_deep_cove/data/db.dart';
 import 'package:discover_deep_cove/env.dart';
 import 'package:discover_deep_cove/util/hex_color.dart';
 import 'package:discover_deep_cove/util/route_generator.dart';
+import 'package:discover_deep_cove/util/local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,8 +20,11 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   //Create cron which schedules checking for updates and notices
-  var cron = Cron();
-  cron.schedule(Schedule.parse('* */1 * * *'), () async {});
+  // var cron = Cron();
+  // cron.schedule(Schedule.parse('* */1 * * *'), () async {});
+
+  //Initializes local notifications
+  LocalNotifications.initlizeNotifications();
 
   runApp(
     DatabaseAdapter(

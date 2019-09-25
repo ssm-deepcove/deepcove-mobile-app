@@ -43,9 +43,10 @@ dependencies:
   image_picker: ^0.6.0+15             # Apache 2.0
   flutter_launcher_icons: ^0.7.2+1    # MIT
   url_launcher: ^5.1.2                # BSD
-  keyboard_visibility: ^0.5.6         # MIT
-  flushbar: ^1.9.0                    # Apache 2.0
+  keyboard_visibility: ^0.5.6         # MIT         Currently not used
+  flushbar: ^1.9.0                    # Apache 2.0  Currently not used
   cron: ^0.2.2                        # BSD
+  flutter_local_notifications: ^0.8.3 # BSD
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
