@@ -1,3 +1,4 @@
+import 'package:discover_deep_cove/views/settings/noticeboard/noticeboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -19,18 +20,38 @@ class LocalNotifications {
         onSelectNotification: onSelectNotification);
   }
 
-  static Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      print('notification payload: ' + payload);
+  static Future onSelectNotification(String payload) async {  
+    switch(payload){
+      case "Notice":
+          await Navigator.of(context).pushNamed('/noticeboard');
+          break;
+
+      case "Content":
+        //TODO: decide which route to pass
     }
-    await Navigator.of(context).pushNamed('/noticeboard');
+    
   }
 
-  static NotificationDetails get _ongoing {
+  static NotificationDetails get _notice {
     final androidChannelSpecifics = AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      'your channel description',
+      '0',
+      'Notices',
+      'New notice notification',
+      importance: Importance.Max,
+      priority: Priority.High,
+      ongoing: true,
+      autoCancel: true,
+      color: HexColor("FF8BC34A"),
+    );
+
+    return NotificationDetails(androidChannelSpecifics, null);
+  }
+
+  static NotificationDetails get _download {
+    final androidChannelSpecifics = AndroidNotificationDetails(
+      '1',
+      'New content',
+      'New content available notification',
       importance: Importance.Max,
       priority: Priority.High,
       ongoing: true,
@@ -48,10 +69,10 @@ class LocalNotifications {
     @required BuildContext cntxt,
     int id = 0,
   }) {
-    context = context;
+    context = cntxt;
 
     return showNotification(
-        title: title, body: body, id: id, type: _ongoing, payload: payload);
+        title: title, body: body, id: id, type: payload == "Notice" ? _notice : _download, payload: payload);
   }
 
   static Future showNotification({
