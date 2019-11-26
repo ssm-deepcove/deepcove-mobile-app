@@ -47,21 +47,23 @@ class QuizImageButton extends StatelessWidget {
                     ),
                   ),
                 ),
-                image.source == null && text == null ? Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Container(
-                      color: Color.fromARGB(190, 0, 0, 0),
-                      height: Screen.height(context,
-                          percentage: Screen.isPortrait(context) && text == null
-                              ? 2.5
-                              : 5),
-                      width: Screen.width(context),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: text != null
-                              ? Text(
+                  children: [
+                    text != null
+                        ? Container(
+                            color: Color.fromARGB(190, 0, 0, 0),
+                            height: Screen.height(context,
+                                percentage:
+                                    Screen.isPortrait(context) && text == null
+                                        ? 2.5
+                                        : 5),
+                            width: Screen.width(context),
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
                                   text,
                                   style: TextStyle(
                                       color: Colors.white,
@@ -71,13 +73,13 @@ class QuizImageButton extends StatelessWidget {
                                   softWrap: false,
                                   maxLines: 1,
                                   overflow: TextOverflow.fade,
-                                )
-                              : Container(),
-                        ),
-                      ),
-                    ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
                   ],
-                ) : Container(),
+                )
               ],
             ),
           ),

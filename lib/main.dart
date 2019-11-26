@@ -2,7 +2,6 @@ import 'package:cron/cron.dart';
 import 'package:discover_deep_cove/data/database_adapter.dart';
 import 'package:discover_deep_cove/data/db.dart';
 import 'package:discover_deep_cove/env.dart';
-import 'package:discover_deep_cove/util/hex_color.dart';
 import 'package:discover_deep_cove/util/route_generator.dart';
 import 'package:discover_deep_cove/util/local_notifications.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +24,9 @@ void main() async {
 
   //Initializes local notifications
   LocalNotifications.initlizeNotifications();
+  if(DotEnv().env['debugStorageMode'] == 'true'){
+    print('Warning: Debug storage mode enabled. Disable for production release.');
+  }
 
   runApp(
     DatabaseAdapter(
@@ -32,7 +34,6 @@ void main() async {
       child: MaterialApp(
         title: Env.appName,
         theme: appTheme(),
-        initialRoute: '/splash',
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     ),
@@ -42,13 +43,13 @@ void main() async {
 ThemeData appTheme() {
   return ThemeData(
     //Green
-    primaryColor: HexColor("FF8BC34A"),
+    primaryColor: Color(0xFF8BC34A),
     //Charcoal
-    primaryColorDark: HexColor("FF262626"),
+    primaryColorDark: Color(0xFF262626),
     //Orange
-    accentColor: HexColor("FFFF5026"),
+    accentColor: Color(0xFFFF5026),
     //Dark Gray
-    backgroundColor: HexColor("FF363636"),
+    backgroundColor: Color(0xFF363636),
 
     //TODO: Add Colors for Grey body text and red urgent notice left idicator
 

@@ -9,11 +9,14 @@ import 'package:discover_deep_cove/env.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/widgets/fact_file/nuggets/fact_nugget.dart';
 import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
+import 'package:discover_deep_cove/widgets/misc/custom_vertical_divider.dart';
 import 'package:discover_deep_cove/widgets/misc/image_source.dart';
 import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
 import 'package:discover_deep_cove/widgets/misc/text/heading.dart';
 import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FactFileDetails extends StatefulWidget {
@@ -92,7 +95,8 @@ class _FactFileDetailsState extends State<FactFileDetails>
     return FutureBuilder(
         future: loadData(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done || entry != null) {
+          if (snapshot.connectionState == ConnectionState.done ||
+              entry != null) {
             return Scaffold(
               backgroundColor: Theme.of(context).backgroundColor,
               body: buildContent(),
@@ -106,15 +110,17 @@ class _FactFileDetailsState extends State<FactFileDetails>
 
   buildContent() {
     return (Screen.isTablet(context) && Screen.isLandscape(context))
-        ? GridView.count(
-            crossAxisCount: 2,
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              getCarousel(),
-              ListView(
-                children: [
-                  getContent(),
-                ],
-              ),
+              Expanded(child: getCarousel(tabletView: true), flex: 3),
+              CustomVerticalDivider(),
+              Expanded(
+                flex: 2,
+                child: ListView(
+                  children: [getContent()],
+                ),
+              )
             ],
           )
         : ListView(
@@ -125,7 +131,7 @@ class _FactFileDetailsState extends State<FactFileDetails>
           );
   }
 
-  getCarousel() {
+  getCarousel({bool tabletView = false}) {
     return FutureBuilder(
       future: loadImages(),
       builder: (context, snapshot) {
@@ -139,6 +145,7 @@ class _FactFileDetailsState extends State<FactFileDetails>
                 fit: StackFit.loose,
                 children: <Widget>[
                   Carousel(
+                    boxFit: BoxFit.fill,
                     autoplay: true,
                     images: snapshot.data,
                     autoplayDuration: Duration(seconds: 5),
@@ -197,7 +204,10 @@ class _FactFileDetailsState extends State<FactFileDetails>
       );
       await precacheImage(provider, context);
       images.add(
-        Image(image: provider),
+        Image(
+          image: provider,
+          fit: BoxFit.cover,
+        ),
       );
     }
     return images;
@@ -221,112 +231,115 @@ class _FactFileDetailsState extends State<FactFileDetails>
 
   getContent() {
     return Container(
-      padding: EdgeInsets.all(
-        Screen.width(context, percentage: 2),
-      ),
+      padding: EdgeInsets.all(8),
       child: Column(
         children: [
+          SizedBox(height: 20),
           Heading(entry.primaryName),
-          SizedBox(height: Screen.height(context, percentage: 1.56)),
-          SubHeading(entry.altName),
-          Divider(color: Colors.white, height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              if (entry.pronounceAudio != null)
-                SizedBox(
-                  width: Screen.width(
-                        context,
-                        percentage: Screen.isSmall(context)
-                            ? 80
-                            : Screen.isTablet(context) &&
-                                    Screen.isLandscape(context)
-                                ? 45
-                                : 88.75,
-                      ) /
-                      2,
-                  child: OutlineButton(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Icon(
-                          FontAwesomeIcons.music,
-                          color: pronounceColor,
-                          size: Screen.isSmall(context) ? 16 : 24,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Pronounce',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: pronounceColor,
-                            fontSize: (Screen.isSmall(context) ? 16 : 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                    onPressed: _isButtonDisabled ? null : playPronounce,
-                    borderSide: BorderSide(
-                      color: pronounceColor,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              if (entry.listenAudio != null)
-                SizedBox(
-                  width: Screen.width(
-                        context,
-                        percentage: Screen.isSmall(context)
-                            ? 80
-                            : Screen.isTablet(context) &&
-                                    Screen.isLandscape(context)
-                                ? 45
-                                : 88.75,
-                      ) /
-                      2,
-                  child: OutlineButton(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Icon(
-                          FontAwesomeIcons.volumeUp,
-                          color: listenColor,
-                          size: Screen.isSmall(context) ? 16 : 24,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Listen',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: listenColor,
-                            fontSize: (Screen.isSmall(context) ? 16 : 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                    onPressed: _isButtonDisabled ? null : playListen,
-                    borderSide: BorderSide(
-                      color: listenColor,
-                      width: 1.5,
-                    ),
-                  ),
-                )
-            ],
-          ),
-          Divider(color: Colors.white, height: 50),
+          SizedBox(height: 10),
+          entry.altName != null ? SubHeading(entry.altName) : Container(),
+          entry.hasAudioClips() ? SizedBox(height: 20) : Container(),
+          buildAudioClipRow(),
+          SizedBox(height: 15),
+          Divider(color: Colors.white, height: 5),
           Column(children: getNuggets()),
           Padding(
-            padding: EdgeInsets.all(
-              Screen.width(context, percentage: 1.25),
-            ),
-            child: BodyText(
-              entry.bodyText,
-              align: TextAlign.justify,
-            ),
+            padding: EdgeInsets.symmetric(
+                horizontal: Screen.width(context, percentage: 1.25),
+                vertical: 15.0),
+            child: BodyText(entry.bodyText, align: TextAlign.left, height: 1.5),
           ),
         ],
+      ),
+    );
+  }
+
+  buildAudioClipRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        if (entry.hasPronouceClip()) buildPronounceButton(),
+        if (entry.hasListenClip()) buildListenButton()
+      ],
+    );
+  }
+
+  Widget buildListenButton() {
+    return SizedBox(
+      width: Screen.width(
+        context,
+        percentage: Screen.isSmall(context)
+            ? 40
+            : Screen.isTablet(context) && Screen.isLandscape(context)
+                ? 16
+                : 40,
+      ),
+      child: OutlineButton(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Icon(
+              FontAwesomeIcons.volumeUp,
+              color: listenColor,
+              size: Screen.isSmall(context) ? 16 : 24,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Listen',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: listenColor,
+                fontSize: (Screen.isSmall(context) ? 16 : 20),
+              ),
+            ),
+          ],
+        ),
+        onPressed: _isButtonDisabled ? null : playListen,
+        borderSide: BorderSide(
+          color: listenColor,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget buildPronounceButton() {
+    return SizedBox(
+      width: Screen.width(
+        context,
+        percentage: Screen.isSmall(context)
+            ? 40
+            : Screen.isTablet(context) && Screen.isLandscape(context)
+                ? 16
+                : 40,
+      ),
+      child: OutlineButton(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Icon(
+              FontAwesomeIcons.music,
+              color: pronounceColor,
+              size: Screen.isSmall(context) ? 16 : 24,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Pronounce',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: pronounceColor,
+                fontSize: (Screen.isSmall(context) ? 16 : 20),
+              ),
+            ),
+          ],
+        ),
+        onPressed: _isButtonDisabled ? null : playPronounce,
+        borderSide: BorderSide(
+          color: pronounceColor,
+          width: 1.5,
+        ),
       ),
     );
   }
@@ -334,7 +347,7 @@ class _FactFileDetailsState extends State<FactFileDetails>
   getNuggets() {
     return entry.nuggets.map((nugget) {
       return FactNugget(
-        path: nugget.image != null ? nugget.image.path : null,
+        path: nugget?.image?.path,
         name: nugget.name,
         text: nugget.text,
       );

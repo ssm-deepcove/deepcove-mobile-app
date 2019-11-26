@@ -2,19 +2,23 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:discover_deep_cove/data/models/activity/activity.dart';
-import 'package:discover_deep_cove/data/models/factfile/fact_file_entry.dart';
-import 'package:discover_deep_cove/data/models/media_file.dart';
+import 'package:discover_deep_cove/data/models/config.dart';
+import 'package:discover_deep_cove/data/models/user_photo.dart';
 import 'package:discover_deep_cove/env.dart';
 import 'package:discover_deep_cove/util/image_handler.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/util/util.dart';
 import 'package:discover_deep_cove/widgets/activities/activity_app_bar.dart';
 import 'package:discover_deep_cove/widgets/activities/activity_pass_save_bar.dart';
-import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
+import 'package:discover_deep_cove/widgets/activities/editAnswer.dart';
 import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
 import 'package:discover_deep_cove/widgets/misc/custom_fab.dart';
+import 'package:discover_deep_cove/widgets/misc/custom_vertical_divider.dart';
+import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
+import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 class PhotographActivityView extends StatefulWidget {
   final Activity activity;
@@ -73,6 +77,8 @@ class _PhotographActivityViewState extends State<PhotographActivityView> {
       decoration: BoxDecoration(border: Border.all(color: Colors.white30)),
       width: Screen.width(context,
           percentage: Screen.isPortrait(context) ? 90 : 45),
+      height: Screen.width(context,
+          percentage: Screen.isPortrait(context) ? 90 : 45),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -90,12 +96,10 @@ class _PhotographActivityViewState extends State<PhotographActivityView> {
     );
   }
 
-  Widget _getCenterChild() {
-    print('getCenterChild');
+  Widget _buildImageSection() {
     return FutureBuilder(
         future: widget.isReview ? _getSavedPhoto() : _getPreview(),
         builder: (context, snapshot) {
-          print(snapshot.connectionState.toString());
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.waiting) {
             return Column(
@@ -119,43 +123,14 @@ class _PhotographActivityViewState extends State<PhotographActivityView> {
 
   @override
   Widget build(BuildContext context) {
-    String imagePath = Env.getResourcePath(widget.activity.userPhoto?.path);
-
-    print("Image path:");
-    print(imagePath);
-    print("Picture " +
-        (File(imagePath).existsSync() ? "exists" : "does not exist"));
-
     return Scaffold(
       appBar: ActivityAppBar(
-          text: widget.activity.title,
-          onTap: widget.activity.factFileId != null
-              ? () => displayFactFile(widget.activity.factFileId)
-              : null,
-        ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
-            child: BodyText(widget.activity.description),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(40, 0, 40, 20),
-            child: BodyText(widget.activity.task),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Divider(color: Color(0xFF777777)),
-          ),
-          Expanded(
-            child: Center(
-                child: Padding(
-              padding: EdgeInsets.all(8),
-              child: _getCenterChild(),
-            )),
-          )
-        ],
+        text: widget.activity.title,
+        onTap: widget.activity.factFileId != null
+            ? () => displayFactFile(widget.activity.factFileId)
+            : null,
       ),
+      body: buildContent(),
       bottomNavigationBar: widget.isReview
           ? BottomBackButton()
           : ActivityPassSaveBar(
@@ -165,88 +140,138 @@ class _PhotographActivityViewState extends State<PhotographActivityView> {
       backgroundColor: Theme.of(context).backgroundColor,
       floatingActionButton: widget.isReview
           ? Container()
-          : Align(alignment: Alignment.bottomCenter, child:Padding(
-              padding: EdgeInsets.only(
-                bottom: 8,
-              ),
-              child: CustomFab(
-                icon: FontAwesomeIcons.camera,
-                text: "I see it!",
-                onPressed: () {
-                  _onImageButtonPressed(context);
-                },
+          : Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: 6,
+                ),
+                child: FloatingActionButton(
+              onPressed: () {
+                _onImageButtonPressed(context);
+              },
+              child: const Icon( FontAwesomeIcons.camera),
+            ),
               ),
             ),
-          ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  buildContent() {
-    return Center(
-      child: (Screen.isTablet(context) && Screen.isLandscape(context))
-          ? GridView.count(
-              crossAxisCount: 2,
-              children: [
-                getTopHalf(),
-                getBottomHalf(),
-              ],
-            )
-          : Column(
-              children: [
-                getTopHalf(),
-                Flexible(
-                  child: getBottomHalf(),
+  
+
+  buildGraphic() {
+    return Padding(
+      padding:
+          EdgeInsets.symmetric(vertical: Screen.isTablet(context) ? 20 : 10),
+      child: widget.activity.image == null
+          ? null
+          : Container(
+              width: Screen.width(context,
+                  percentage: Screen.isLandscape(context) ? 35 : 85),
+              height: Screen.width(context,
+                  percentage: Screen.isLandscape(context) ? 35 : 85),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: FileImage(
+                    File(
+                      Env.getResourcePath(widget.activity.image.path),
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              ),
+              child: Container()),
     );
+  }
+
+  buildContent() {
+    return (Screen.isTablet(context) && Screen.isLandscape(context))
+        ? Row(
+            children: [
+              Expanded(child: getTopHalf()),
+              CustomVerticalDivider(),
+              Expanded(child: getBottomHalfLandscape())
+            ],
+          )
+        : Scrollbar(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [getTopHalf(), getBottomHalfPortrait()],
+              ),
+            ),
+          );
   }
 
   getTopHalf() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            Screen.width(context, percentage: 5),
-            Screen.height(context, percentage: 2.5),
-            Screen.width(context, percentage: 5),
-            Screen.height(context, percentage: 2.5),
-          ),
-          child: BodyText(
-            widget.activity.description,
-            size: Screen.isTablet(context) ? 30 : null,
-          ),
+    return Scrollbar(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildGraphic(),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: BodyText(
+                widget.activity.description,
+                align: TextAlign.left,
+                size: Screen.isTablet(context) ? 30 : null,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: SubHeading(
+                widget.activity.task,
+                align: TextAlign.left,
+                size: Screen.isTablet(context) ? 30 : null,
+              ),
+            ),
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            Screen.width(context, percentage: 5),
-            0,
-            Screen.width(context, percentage: 5),
-            Screen.height(context, percentage: 2.5),
-          ),
-          child: BodyText(
-            widget.activity.task,
-            size: Screen.isTablet(context) ? 30 : null,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  getBottomHalf() {
+  getBottomHalfLandscape() {
     return Column(
       children: <Widget>[
         Expanded(
           child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: _getCenterChild(),
+            child: Container(
+              margin: EdgeInsets.fromLTRB(8, 24, 8, 8),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: _buildImageSection(),
+                    ),
+                    widget.isReview ? EditAnswer() : Container()
+                  ],
+                ),
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  getBottomHalfPortrait() {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(8, 24, 8, 8),
+        child: Column(
+          children: <Widget>[
+            BodyText('Your answer:'),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: _buildImageSection(),
+            ),
+            widget.isReview ? EditAnswer() : Container()
+          ],
+        ),
+      ),
     );
   }
 
@@ -264,20 +289,23 @@ class _PhotographActivityViewState extends State<PhotographActivityView> {
     try {
       // Determine directory and filename to store new image
       Directory directory = Directory(Env.getResourcePath('user_photos'));
-      String filename =
-          Util.getAntiCollisionName(widget.activity.title, MediaFileType.jpg);
+      String filename = Util.getAntiCollisionName(
+        widget.activity.title,
+        ".jpg",
+      );
+
+      if (await Util.savePhotosToGallery(context))
+        await GallerySaver.saveImage(_image.path);
 
       // Save the image to the users photos directory, and delete temp image
       ImageHandler.saveImage(
           tempImage: _image, directory: directory, name: filename);
 
       // Add a database record for the new image
-      MediaFile image = MediaFile.create(
-        name: filename,
+      UserPhoto image = UserPhoto.create(
         path: 'user_photos/$filename',
-        fileType: MediaFileType.jpg.index,
       );
-      var id = await MediaFileBean.of(context).insert(image);
+      var id = await UserPhotoBean.of(context).insert(image);
 
       // Update the activity with the new user image
       widget.activity.userPhotoId = id;

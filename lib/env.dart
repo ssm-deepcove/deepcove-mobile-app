@@ -1,9 +1,13 @@
 import 'dart:io';
 
+import 'package:discover_deep_cove/util/screen.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong/latlong.dart';
+
+enum CmsServerLocation { Intranet, Internet }
 
 /// This class provides easy access to the applications environment variables,
 /// and other variables derived from these.
@@ -22,32 +26,26 @@ class Env {
 
   static String get appName => DotEnv().env['appName'];
 
-  /// API access token
-  static String get _accessToken => DotEnv().env['accessToken'];
-
   /// Root URL of the content management system
-  static String get _cmsUrl => DotEnv().env['remoteUrl'];
+  static String get remoteCmsUrl => DotEnv().env['remoteUrl'];
 
-  /// API URL for retrieving database data in JSON format
-  static String get _dataSyncUrl => DotEnv().env['dataSyncUrl'];
+  /// IP address or domain name of the on-site server
+  static String get intranetCmsUrl => DotEnv().env['intranetUrl'];
 
-  /// API URL for retrieving the SHA256 hash of the JSON payload delivered
-  /// by the [_dataSyncUrl] request.
-  static String get _dataHashUrl => DotEnv().env['dataHashUrl'];
+  // API Endpoints
+  static String get _configUrl => DotEnv().env['config'];
 
-  /// API URL for getting the remote database version, before downloading.
-  static String get _dataVersionUrl => DotEnv().env['dataVersionUrl'];
+  static String get _mediaUrl => DotEnv().env['media'];
 
-  /// API URL for retrieving zipped application files (images/audio)
-  static String get _filesSyncUrl => DotEnv().env['filesSyncUrl'];
+  static String get _mediaDownloadUrl => DotEnv().env['mediaDownload'];
 
-  /// API URL for retrieving the SHA256 hash of the zipped file retrieved by
-  /// the [_filesSyncUrl] request.
-  static String get _filesHashUrl => DotEnv().env['filesHashUrl'];
+  static String get _quizzesUrl => DotEnv().env['quizzes'];
 
-  /// API URL for getting the remote files version before committing to
-  /// download.
-  static String get _versionsUrl => DotEnv().env['versionsUrl'];
+  static String get _factFilesUrl => DotEnv().env['factFiles'];
+
+  static String get _tracksUrl => DotEnv().env['tracks'];
+
+  static String get _activitiesUrl => DotEnv().env['activities'];
 
   //-------------------------------- PATHS  ------------------------------------
 
@@ -62,11 +60,18 @@ class Env {
   static bool get debugStorageMode =>
       DotEnv().env['debugStorageMode'].toLowerCase() == 'true';
 
+  static bool get asyncDownload =>
+      DotEnv().env['asyncMediaDownload'].toLowerCase() == 'true';
+
   static String _rootStorageDirPath;
 
   /// Relative path of the database file, from the applications root
   /// storage directory.
   static String get _dbPath => DotEnv().env['databasePath'];
+
+  /// Relative path of the temp database file, from the applications root
+  /// storage directory.
+  static String get _tempDbPath => DotEnv().env['tempDatabasePath'];
 
   /// Relative path to which the zip file from the server will be extracted.
   static String get _resourcesPath => DotEnv().env['resourcesPath'];
@@ -95,45 +100,17 @@ class Env {
         double.parse(DotEnv().env['defaultCenterLong']),
       );
 
-  //-------------------------- HELPER METHODS ----------------------------------
+  //---------------------- HELPER METHODS - PATHS ------------------------------
   // These perform basic processing on configured variables, in order to return
   // more useful information to the application code.
-
-  /// Returns the full URL for retrieving database data in JSON format,
-  /// including the access token.
-  static String get dataSyncUrl {
-    return _cmsUrl + _dataSyncUrl + '?token=' + _accessToken;
-  }
-
-  /// Returns the full URL for retrieving zipped application files
-  /// (images/audio)
-  static String get filesSyncUrl {
-    return _cmsUrl + _filesSyncUrl + '?token=' + _accessToken;
-  }
-
-  /// Returns the full URL for retrieving the SHA256 hash of the JSON data
-  /// retrieved by the [dataSyncUrl] request.
-  static String get dataHashUrl {
-    return _cmsUrl + _dataHashUrl + '?token=' + _accessToken;
-  }
-
-  /// Returns the full URL for retrieving the SHA256 hash of the zipped
-  /// file downloaded by the [filesSyncUrl] request.
-  static String get filesHashUrl {
-    return _cmsUrl + _filesHashUrl + '?token=' + _accessToken;
-  }
-
-  /// Returns the full URL for retrieving the remote data/files versions.
-  /// This means the application can avoid downloading data/files that it
-  /// already has.
-  static String get versionsUrl {
-    return _cmsUrl + _versionsUrl + '?token=' + _accessToken;
-  }
 
   static String get rootStorageDirPath => _rootStorageDirPath;
 
   /// Returns the path to the database file.
   static String get dbPath => join(_rootStorageDirPath, _dbPath);
+
+  /// Returns the path to the temp database file.
+  static String get tempDbPath => join(_rootStorageDirPath, _tempDbPath);
 
   /// Returns the path to the resources directory.
   static String get resourcesPath => join(_rootStorageDirPath, _resourcesPath);
@@ -143,5 +120,83 @@ class Env {
   static String getResourcePath(String relativePath) {
     String rootPath = resourcesPath;
     return join(rootPath, relativePath);
+  }
+
+  //----------------------- HELPER METHODS - API  ------------------------------
+  // These methods configure URLs to use when making requests to the CMS API
+
+  static String _getCmsUrl(CmsServerLocation server) {
+    return server == CmsServerLocation.Internet ? remoteCmsUrl : intranetCmsUrl;
+  }
+
+  /// API endpoint to return the latest config from the server.
+  static String configUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _configUrl;
+  }
+
+  /// API endpoint to return summary of all required media files.
+  static String mediaListUrl(CmsServerLocation server, BuildContext context) {
+    return _getCmsUrl(server) +
+        _mediaUrl +
+        '?width=${Screen.isTablet(context) ? 500 : null}';
+  }
+
+  /// API endpoint to return details of a single media file.
+  static String mediaDetailsUrl(
+      CmsServerLocation server, int id, BuildContext context) {
+    return _getCmsUrl(server) +
+        _mediaUrl +
+        '/$id' +
+        '?width=${Screen.isTablet(context) ? 500 : null}';
+  }
+
+  /// API endpoint to return the specified media file.
+  static String mediaDownloadUrl(
+      CmsServerLocation server, String filename, BuildContext context) {
+    return _getCmsUrl(server) +
+        _mediaDownloadUrl +
+        '?filename=$filename&width=${Screen.isTablet(context) ? 500 : null}';
+  }
+
+  /// API endpoint to return a summary of active quizzes.
+  static String quizzesUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _quizzesUrl;
+  }
+
+  /// API endpoint to return details, questions and answers for a given
+  /// quiz ID.
+  static String quizDetailsUrl(CmsServerLocation server, int id) {
+    return _getCmsUrl(server) + _quizzesUrl + '/$id';
+  }
+
+  /// API endpoint to retrieve summary of active fact files.
+  static String factFilesListUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _factFilesUrl;
+  }
+
+  /// API endpoint to retrieve details, including nuggets and gallery
+  /// image IDs, for a given fact file ID.
+  static String factFileDetailsUrl(CmsServerLocation server, int id) {
+    return _getCmsUrl(server) + _factFilesUrl + '/$id';
+  }
+
+  /// API endpoint to retrieve summary of active fact file categories.
+  static String factFileCategoriesListUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _factFilesUrl + '/categories';
+  }
+
+  /// API endpoint to retrieve list of active tracks, and their names.
+  static String tracksListUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _tracksUrl;
+  }
+
+  /// API endpoint to retrieve list of active activities.
+  static String activitiesListUrl(CmsServerLocation server) {
+    return _getCmsUrl(server) + _activitiesUrl;
+  }
+
+  /// API endpoint to retrieve details for a given activity ID.
+  static String activityDetailsUrl(CmsServerLocation server, int id) {
+    return _getCmsUrl(server) + _activitiesUrl + '/$id';
   }
 }

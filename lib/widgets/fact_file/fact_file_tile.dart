@@ -35,6 +35,9 @@ class SmallTile extends StatelessWidget {
                 File(
                   Env.getResourcePath(imagePath),
                 ),
+                fit: BoxFit.cover,
+                width: 500,
+                height: 500,
               ),
             ),
             SizedBox(
