@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:discover_deep_cove/data/models/notice.dart';
 import 'package:discover_deep_cove/env.dart';
 import 'package:discover_deep_cove/util/date_util.dart';
-import 'package:discover_deep_cove/util/hex_color.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/widgets/misc/bottom_back_button.dart';
 import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
@@ -75,14 +74,14 @@ class NoticeView extends StatelessWidget {
           Text(
             DateUtil.formatDate(notice.activatedAt),
             style: TextStyle(
-              color: HexColor("FF999999"),
+              color: Color(0xFF999999),
               fontSize: Screen.isTablet(context)
                   ? 23
                   : Screen.isSmall(context) ? 12 : 14,
             ),
           ),
           Screen.isPortrait(context)
-              ? Divider(color: HexColor("FF777777"), height: 20)
+              ? Divider(color: Color(0xFF777777), height: 20)
               : Container(),
         ],
       ),
@@ -128,7 +127,7 @@ class NoticeView extends StatelessWidget {
               ),
         notice.image.path == null
             ? Container()
-            : Divider(color: HexColor("FF777777"), height: 20),
+            : Divider(color: Color(0xFF777777), height: 20),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -154,7 +153,7 @@ class NoticeView extends StatelessWidget {
             ],
           ),
         ),
-        Divider(color: HexColor("FF777777"), height: 40),
+        Divider(color: Color(0xFF777777), height: 40),
       ],
     );
   }

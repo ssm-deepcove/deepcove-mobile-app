@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'hex_color.dart';
-
 class LocalNotifications {
   static FlutterLocalNotificationsPlugin _notifications;
   static BuildContext _context;
@@ -41,7 +39,7 @@ class LocalNotifications {
       priority: Priority.High,
       ongoing: false,
       autoCancel: true,
-      color: HexColor("FF8BC34A"),
+      color: Color(0xFF8BC34A),
     );
 
     return NotificationDetails(androidChannelSpecifics, null);
@@ -56,7 +54,7 @@ class LocalNotifications {
       priority: Priority.High,
       ongoing: false,
       autoCancel: true,
-      color: HexColor("FF8BC34A"),
+      color: Color(0xFF8BC34A),
     );
 
     return NotificationDetails(androidChannelSpecifics, null);

@@ -1,5 +1,4 @@
 import 'package:discover_deep_cove/util/date_util.dart';
-import 'package:discover_deep_cove/util/hex_color.dart';
 import 'package:discover_deep_cove/util/screen.dart';
 import 'package:discover_deep_cove/widgets/misc/text/body_text.dart';
 import 'package:discover_deep_cove/widgets/misc/text/sub_heading.dart';
@@ -68,7 +67,7 @@ class NoticeTile extends StatelessWidget {
                             Text(
                               DateUtil.formatDate(date),
                               style: TextStyle(
-                                color: HexColor("FF999999"),
+                                color: Color(0xFF999999),
                                 fontSize: Screen.isTablet(context)
                                     ? 23
                                     : Screen.isSmall(context) ? 12 : 14,
@@ -97,7 +96,7 @@ class NoticeTile extends StatelessWidget {
                 Text(
                   desc,
                   style: TextStyle(
-                    color: HexColor("FF999999"),
+                    color: Color(0xFF999999),
                     fontSize: Screen.isTablet(context)
                         ? 20
                         : Screen.isSmall(context) ? 14 : 16,
@@ -108,7 +107,7 @@ class NoticeTile extends StatelessWidget {
                   height: 20,
                 ),
                 hasDivider
-                    ? Divider(color: HexColor("FF777777"), height: 1)
+                    ? Divider(color: Color(0xFF777777), height: 1)
                     : Container(),
               ],
             ),
